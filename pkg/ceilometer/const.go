@@ -31,4 +31,8 @@ const (
 
 	// KollaConfigNotification -
 	KollaConfigNotification = "/var/lib/config-data/merged/config-notification.json"
+
+	// runAsUser
+	runAsUserRoot       int64 = 0
+	runAsUserCeilometer int64 = 42405
 )

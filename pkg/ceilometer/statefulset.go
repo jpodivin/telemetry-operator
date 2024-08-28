@@ -43,8 +43,6 @@ func StatefulSet(
 	configHash string,
 	labels map[string]string,
 ) (*appsv1.StatefulSet, error) {
-	runAsUser := int64(0)
-
 	// TO-DO Probes
 	livenessProbe := &corev1.Probe{
 		// TODO might need tuning
@@ -121,7 +119,7 @@ func StatefulSet(
 		Name:  "ceilometer-central-agent",
 		Env:   env.MergeEnvs([]corev1.EnvVar{}, envVarsCentral),
 		SecurityContext: &corev1.SecurityContext{
-			RunAsUser: &runAsUser,
+			RunAsUser: ptr.To(runAsUserCeilometer),
 		},
 		VolumeMounts: centralVolumeMounts,
 	}
@@ -135,7 +133,7 @@ func StatefulSet(
 		Name:  "ceilometer-notification-agent",
 		Env:   env.MergeEnvs([]corev1.EnvVar{}, envVarsNotification),
 		SecurityContext: &corev1.SecurityContext{
-			RunAsUser: &runAsUser,
+			RunAsUser: ptr.To(runAsUserCeilometer),
 		},
 		VolumeMounts: notificationVolumeMounts,
 	}
@@ -144,7 +142,7 @@ func StatefulSet(
 		Image:           instance.Spec.SgCoreImage,
 		Name:            "sg-core",
 		SecurityContext: &corev1.SecurityContext{
-			RunAsUser: &runAsUser,
+			RunAsUser: ptr.To(runAsUserCeilometer),
 		},
 		VolumeMounts: getSgCoreVolumeMounts(),
 	}
@@ -153,7 +151,7 @@ func StatefulSet(
 		Image:           instance.Spec.ProxyImage,
 		Name:            "proxy-httpd",
 		SecurityContext: &corev1.SecurityContext{
-			RunAsUser: &runAsUser,
+			RunAsUser: ptr.To(runAsUserRoot),
 		},
 		Ports: []corev1.ContainerPort{{
 			ContainerPort: 3000,
